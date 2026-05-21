@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Chat Box</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #eef2f3, #8e9eab);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .chat-container {
+      width: 100%;
+      max-width: 500px;
+      height: 80vh;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background: #4f46e5;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      background: #f9fafb;
+    }
+
+    .chat-message {
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .user {
+      text-align: right;
+      color: #1d4ed8;
+    }
+
+    .bot {
+      text-align: left;
+      color: #10b981;
+    }
+
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #ddd;
+      background: #f3f4f6;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      background: transparent;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      background-color: #4f46e5;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #4338ca;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #cbd5e0;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="chat-container">
+    <div class="chat-header">
+      💬 AI Wellness Assistant
+    </div>
+
+    <div class="chat-box" id="chatBox">
+      <div class="chat-message bot">AI: Hello! Ask me anything about your wellness journey 🌿</div>
+    </div>
+
+    <div class="chat-input">
+      <input type="text" id="userInput" placeholder="Type your message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById('chatBox');
+    const userInput = document.getElementById('userInput');
+
+    const fakeResponses = {
+      "hi": "Hello! How can I assist you today?",
+      "how are you": "I'm just code, but feeling great! 😊",
+      "what is your name": "I'm your AI Wellness Assistant 🤖",
+      "help": "You can ask about yoga, meditation, booking tips, or just chat with me!",
+      "bye": "Goodbye! Stay calm and stay healthy 🧘‍♀️",
+      "tell me your features":"In this web application you can book a session for yoga , gym or for a diet consultation.",
+      "which is better yoga or gym?": "yoga is better for flexibility, mental peace, and low-impact fitness.Gym is better for building strength, muscle, and faster fat loss.Choose based on your goal — or combine both for a balanced lifestyle."
+
+    };
+
+    function appendMessage(sender, message) {
+      const msgDiv = document.createElement('div');
+      msgDiv.classList.add('chat-message', sender);
+      msgDiv.innerText = message;
+      chatBox.appendChild(msgDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function sendMessage() {
+      const input = userInput.value.trim();
+      if (!input) return;
+
+      appendMessage('user', "You: " + input);
+      userInput.value = '';
+
+      setTimeout(() => {
+        const lower = input.toLowerCase();
+        const reply = fakeResponses[lower] || "I'm still learning 🤓. Try asking something else!";
+        appendMessage('bot', "AI: " + reply);
+      }, 600);
+    }
+
+    userInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+
+</body>
+</html>

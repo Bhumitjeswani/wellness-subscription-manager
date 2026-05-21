@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dark Mode Toggle</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Enable class-based dark mode
+    tailwind.config = {
+      darkMode: 'class'
+    };
+  </script>
+</head>
+<body class="transition-colors duration-500 bg-white text-black dark:bg-gray-900 dark:text-white">
+
+  <div class="min-h-screen flex flex-col items-center justify-center space-y-6">
+    <h1 class="text-3xl font-bold">🌗 Dark Mode Toggle Example</h1>
+    <button id="toggleDarkMode" class="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded shadow">
+      Toggle Dark Mode
+    </button>
+    <p class="text-lg">Try toggling and refreshing the page. It will remember your preference.</p>
+  </div>
+
+  <script>
+    const root = document.documentElement;
+    const toggleBtn = document.getElementById("toggleDarkMode");
+
+    // Apply saved theme on load
+    if (localStorage.getItem("darkMode") === "true") {
+      root.classList.add("dark");
+    }
+
+    // Toggle dark mode and save preference
+    toggleBtn.addEventListener("click", () => {
+      root.classList.toggle("dark");
+      const isDark = root.classList.contains("dark");
+      localStorage.setItem("darkMode", isDark);
+    });
+  </script>
+</body>
+</html>

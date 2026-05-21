@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rewards Store</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    };
+  </script>
+</head>
+<body class="transition duration-500 bg-white text-black dark:bg-gray-900 dark:text-white min-h-screen p-6">
+
+  <!-- Dark Mode Toggle -->
+  <button id="toggleDarkMode" class="fixed top-4 right-4 px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded shadow">
+    Toggle Dark Mode
+  </button>
+
+  <header class="mb-8 text-center">
+    <h1 class="text-3xl font-bold text-teal-600 dark:text-teal-400">🎁 Rewards Store</h1>
+    <p class="text-gray-600 dark:text-gray-300">Use your points to unlock goodies!</p>
+    <p class="mt-2 text-lg">Points: <span id="points" class="font-bold">--</span></p>
+  </header>
+
+  <!-- Store Items -->
+  <div class="grid md:grid-cols-3 gap-6">
+    <!-- Item Template -->
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow text-center">
+      <h2 class="text-lg font-semibold">Free Smoothie</h2>
+      <p class="text-gray-500 dark:text-gray-400 mb-2">🥤 Boost your health</p>
+      <p class="mb-3 font-bold">Cost: 50 pts</p>
+      <button onclick="redeem(50, this)" class="redeem-btn px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600 disabled:bg-gray-400">
+        Redeem
+      </button>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow text-center">
+      <h2 class="text-lg font-semibold">1-on-1 Yoga Session</h2>
+      <p class="text-gray-500 dark:text-gray-400 mb-2">🧘‍♀️ Personalized guidance</p>
+      <p class="mb-3 font-bold">Cost: 100 pts</p>
+      <button onclick="redeem(100, this)" class="redeem-btn px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600 disabled:bg-gray-400">
+        Redeem
+      </button>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow text-center">
+      <h2 class="text-lg font-semibold">Merch T-shirt</h2>
+      <p class="text-gray-500 dark:text-gray-400 mb-2">👕 Show your progress</p>
+      <p class="mb-3 font-bold">Cost: 150 pts</p>
+      <button onclick="redeem(150, this)" class="redeem-btn px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600 disabled:bg-gray-400">
+        Redeem
+      </button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    const root = document.documentElement;
+    const toggleBtn = document.getElementById("toggleDarkMode");
+
+    // Dark Mode
+    if (localStorage.getItem("darkMode") === "true") {
+      root.classList.add("dark");
+    }
+
+    toggleBtn.addEventListener("click", () => {
+      root.classList.toggle("dark");
+      localStorage.setItem("darkMode", root.classList.contains("dark"));
+    });
+
+    // Points Logic
+    let points = parseInt(localStorage.getItem("points")) || 120;
+    const pointsDisplay = document.getElementById("points");
+    const buttons = document.querySelectorAll(".redeem-btn");
+
+    pointsDisplay.innerText = points;
+
+    function redeem(cost, btn) {
+      if (points >= cost) {
+        points -= cost;
+        localStorage.setItem("points", points);
+        pointsDisplay.innerText = points;
+        alert("Reward redeemed!");
+        updateButtons();
+      } else {
+        alert("Not enough points!");
+      }
+    }
+
+    function updateButtons() {
+      buttons.forEach(btn => {
+        const cost = parseInt(btn.previousElementSibling.innerText.match(/\d+/)[0]);
+        btn.disabled = points < cost;
+      });
+    }
+
+    updateButtons();
+  </script>
+
+</body>
+</html>

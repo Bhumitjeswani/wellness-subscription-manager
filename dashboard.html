@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wellness Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    };
+  </script>
+</head>
+<body class="transition-colors duration-500 bg-white text-black dark:bg-gray-900 dark:text-white min-h-screen p-6">
+
+  <!-- Dark Mode Toggle Button -->
+  <button id="toggleDarkMode" class="fixed top-4 right-4 px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded shadow">
+    Dark Mode
+  </button>
+
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold text-teal-600 dark:text-teal-400">Welcome to Your Wellness Dashboard</h1>
+    <p class="text-gray-600 dark:text-gray-300">Track your progress, sessions & rewards.</p>
+  </header>
+
+  <!-- User Stats Cards -->
+  <div class="grid md:grid-cols-3 gap-6 mb-8">
+
+    <!-- Reward Points -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+      <h2 class="text-lg font-semibold">🏆 Reward Points</h2>
+      <p id="points" class="text-2xl font-bold mt-2">--</p>
+    </div>
+
+    <!-- Streak -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+      <h2 class="text-lg font-semibold">🔥 Streak</h2>
+      <p id="streak" class="text-2xl font-bold mt-2">--</p>
+    </div>
+
+    <!-- Mood -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+      <h2 class="text-lg font-semibold">😊 Today's Mood</h2>
+      <div class="mt-2 flex space-x-2">
+        <button onclick="setMood('😃')" class="px-3 py-1 bg-teal-100 dark:bg-teal-800 rounded hover:scale-105">😃</button>
+        <button onclick="setMood('😐')" class="px-3 py-1 bg-yellow-100 dark:bg-yellow-700 rounded hover:scale-105">😐</button>
+        <button onclick="setMood('😔')" class="px-3 py-1 bg-red-100 dark:bg-red-800 rounded hover:scale-105">😔</button>
+      </div>
+      <p class="mt-2 text-lg font-bold" id="moodDisplay">--</p>
+    </div>
+
+  </div>
+
+  <!-- Quick Links Section -->
+  <div class="grid md:grid-cols-3 gap-6">
+    <a href="gamification.html" class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:scale-105 transition text-center">
+      🎮 Gamification
+    </a>
+    <a href="rewards.html" class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:scale-105 transition text-center">
+      🛍️ Rewards Store
+    </a>
+    <a href="session.html" class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:scale-105 transition text-center">
+      📅 Book a Session
+    </a>
+    <a href="chatbox.html" class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:scale-105 transition text-center">
+        AI Chatbox
+      </a>
+      <a href="plans.html" class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow hover:scale-105 transition text-center">
+        Custom Plans
+      </a>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    // Load dark mode from storage
+    const root = document.documentElement;
+    const toggleBtn = document.getElementById("toggleDarkMode");
+
+    if (localStorage.getItem("darkMode") === "true") {
+      root.classList.add("dark");
+    }
+
+    toggleBtn.addEventListener("click", () => {
+      root.classList.toggle("dark");
+      localStorage.setItem("darkMode", root.classList.contains("dark"));
+    });
+
+    // Stats Logic
+    let points = parseInt(localStorage.getItem("points")) || 120;
+    let streak = parseInt(localStorage.getItem("streak")) || 0;
+    let mood = localStorage.getItem("todayMood") || "--";
+
+    document.getElementById("points").innerText = points;
+    document.getElementById("streak").innerText = streak + " 🔥";
+    document.getElementById("moodDisplay").innerText = mood;
+
+    function setMood(emoji) {
+      localStorage.setItem("todayMood", emoji);
+      document.getElementById("moodDisplay").innerText = emoji;
+    }
+  </script>
+
+</body>
+</html>

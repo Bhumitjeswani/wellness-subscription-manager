@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complete Challenge - Wellness</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' };
+  </script>
+</head>
+<body class="bg-white text-black dark:bg-gray-900 dark:text-white min-h-screen p-6 transition duration-500">
+
+  <!-- Dark Mode Toggle -->
+  <button id="toggleDarkMode" class="fixed top-4 right-4 px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded shadow">
+    Toggle Dark Mode
+  </button>
+
+  <!-- Header -->
+  <header class="mb-8 text-center">
+    <h1 class="text-4xl font-bold text-indigo-600 dark:text-indigo-400">🎮 Complete Your Challenge</h1>
+    <p class="text-xl text-gray-600 dark:text-gray-300">Answer the quiz questions to earn points!</p>
+  </header>
+
+  <!-- Quiz Game -->
+  <div class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg mb-8">
+    <h2 class="text-2xl font-semibold mb-4">Quiz Game</h2>
+    <div id="quizQuestions" class="space-y-4"></div>
+    <button id="submitQuizBtn" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-full shadow-lg">Submit Answers</button>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Quiz Questions
+    const quizQuestions = [
+      { question: "What is the capital of France?", options: ["Paris", "London", "Berlin", "Rome"], correctAnswer: "Paris" },
+      { question: "What is 5 + 7?", options: ["10", "12", "15", "20"], correctAnswer: "12" },
+      { question: "What is the color of the sky?", options: ["Blue", "Green", "Yellow", "Red"], correctAnswer: "Blue" },
+    ];
+
+    // Dark Mode Toggle
+    const root = document.documentElement;
+    const toggleBtn = document.getElementById("toggleDarkMode");
+    if (localStorage.getItem("darkMode") === "true") root.classList.add("dark");
+    toggleBtn.addEventListener("click", () => {
+      root.classList.toggle("dark");
+      localStorage.setItem("darkMode", root.classList.contains("dark"));
+    });
+
+    // Render Quiz Questions
+    function renderQuiz() {
+      const quizContainer = document.getElementById("quizQuestions");
+      quizContainer.innerHTML = "";
+      quizQuestions.forEach((q, index) => {
+        const questionDiv = document.createElement("div");
+        questionDiv.classList.add("space-y-2");
+        questionDiv.innerHTML = `
+          <p class="font-medium">${q.question}</p>
+          ${q.options.map(option => `
+            <label class="block">
+              <input type="radio" name="question${index}" value="${option}" class="mr-2"> ${option}
+            </label>
+          `).join("")}
+        `;
+        quizContainer.appendChild(questionDiv);
+      });
+    }
+
+    // Handle Quiz Submission
+    document.getElementById("submitQuizBtn").addEventListener("click", () => {
+      let score = 0;
+      quizQuestions.forEach((q, index) => {
+        const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+        if (selectedOption && selectedOption.value === q.correctAnswer) {
+          score++;
+        }
+      });
+
+      // Add points and redirect
+      if (score === quizQuestions.length) {
+        alert("You completed the challenge and earned 20 points!");
+        let points = parseInt(localStorage.getItem("points") || "0");
+        points += 20;
+        localStorage.setItem("points", points);
+      } else {
+        alert("Try again! You didn't get all the answers correct.");
+      }
+
+      window.location.href = "gamification.html";  // Redirect back to gamification page
+    });
+
+    // Initialize and Render Quiz
+    renderQuiz();
+  </script>
+</body>
+</html>

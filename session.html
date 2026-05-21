@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Book a Wellness Session</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' };
+  </script>
+</head>
+<body class="bg-white text-black dark:bg-gray-900 dark:text-white min-h-screen p-6 transition duration-500">
+
+  <!-- Dark Mode Toggle -->
+  <button id="toggleDarkMode" class="fixed top-4 right-4 px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded shadow">
+    Toggle Dark Mode
+  </button>
+
+  <!-- Header -->
+  <header class="mb-8 text-center">
+    <h1 class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">🗓️ Book a Wellness Session</h1>
+    <p class="text-gray-600 dark:text-gray-300">Choose your service, date, time, and start your wellness journey!</p>
+  </header>
+
+  <!-- Upcoming Session Highlight -->
+  <div id="upcomingBanner" class="hidden mb-6 p-4 bg-green-100 dark:bg-green-700 text-green-800 dark:text-white rounded shadow text-center font-medium"></div>
+
+  <!-- Booking Form -->
+  <div class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+    <form id="bookingForm" class="space-y-4">
+      <div>
+        <label class="block font-medium mb-1">Session Type</label>
+        <select id="sessionType" class="w-full p-2 border rounded dark:bg-gray-700">
+          <option value="Yoga">🧘 Yoga</option>
+          <option value="Gym">🏋️ Gym</option>
+          <option value="Diet Consultation">🥗 Diet Consultation</option>
+        </select>
+      </div>
+      <div>
+        <label class="block font-medium mb-1">Select Date</label>
+        <input type="date" id="sessionDate" class="w-full p-2 border rounded dark:bg-gray-700" required />
+      </div>
+      <div>
+        <label class="block font-medium mb-1">Select Time</label>
+        <input type="time" id="sessionTime" class="w-full p-2 border rounded dark:bg-gray-700" required />
+      </div>
+      <div>
+        <label><input type="checkbox" id="repeatWeekly" class="mr-2" />Repeat weekly for 4 weeks</label>
+      </div>
+      <button type="submit" class="w-full mt-4 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700">
+        Book Session
+      </button>
+
+      <!-- Payment Button -->
+      <button id="payButton" type="button" class="w-full mt-2 bg-green-600 text-white py-2 rounded hover:bg-green-700 hidden">
+        Proceed with Payment 💳
+      </button>
+    </form>
+  </div>
+
+  <!-- Booking History -->
+  <div class="max-w-xl mx-auto mt-8">
+    <h2 class="text-xl font-semibold mb-4">📋 Your Bookings</h2>
+    <ul id="bookingList" class="space-y-3"></ul>
+
+    <!-- Stats -->
+    <div class="mt-8 bg-gray-100 dark:bg-gray-700 p-4 rounded shadow">
+      <h3 class="font-semibold mb-2">📊 Session Stats</h3>
+      <p id="stats">Bookings: 0 | Cancellations: 0 | Points: 0</p>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    const root = document.documentElement;
+    const toggleBtn = document.getElementById("toggleDarkMode");
+    if (localStorage.getItem("darkMode") === "true") root.classList.add("dark");
+    toggleBtn.addEventListener("click", () => {
+      root.classList.toggle("dark");
+      localStorage.setItem("darkMode", root.classList.contains("dark"));
+    });
+
+    const form = document.getElementById("bookingForm");
+    const bookingList = document.getElementById("bookingList");
+    const stats = document.getElementById("stats");
+    const banner = document.getElementById("upcomingBanner");
+    const payButton = document.getElementById("payButton");
+
+    let bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+    let points = parseInt(localStorage.getItem("points") || "0");
+    let cancellations = parseInt(localStorage.getItem("cancellations") || "0");
+
+    function saveData() {
+      localStorage.setItem("bookings", JSON.stringify(bookings));
+      localStorage.setItem("points", points);
+      localStorage.setItem("cancellations", cancellations);
+    }
+
+    function updateStats() {
+      stats.textContent = `Bookings: ${bookings.length} | Cancellations: ${cancellations} | Points: ${points}`;
+    }
+
+    function renderBookings() {
+      bookingList.innerHTML = "";
+      bookings.sort((a, b) => new Date(a.date + " " + a.time) - new Date(b.date + " " + b.time));
+      bookings.forEach((b, index) => {
+        const li = document.createElement("li");
+        li.className = "p-3 bg-gray-100 dark:bg-gray-600 rounded flex justify-between items-center";
+        li.innerHTML = `<span>${b.session} on ${b.date} at ${b.time}</span>
+          <button class="text-red-600 hover:underline" onclick="cancelBooking(${index})">Cancel</button>`;
+        bookingList.appendChild(li);
+      });
+      highlightUpcoming();
+      updateStats();
+    }
+
+    function highlightUpcoming() {
+      if (!bookings.length) {
+        banner.classList.add("hidden");
+        return;
+      }
+      const next = bookings[0];
+      const timeDiff = new Date(`${next.date}T${next.time}`) - new Date();
+      const hrsLeft = Math.floor(timeDiff / (1000 * 60 * 60));
+      const minsLeft = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+      banner.textContent = `⏰ Upcoming: ${next.session} at ${next.time} on ${next.date} (${hrsLeft}h ${minsLeft}m left)`;
+      banner.classList.remove("hidden");
+    }
+
+    function cancelBooking(index) {
+      bookings.splice(index, 1);
+      cancellations++;
+      points = Math.max(points - 10, 0);
+      saveData();
+      renderBookings();
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const session = document.getElementById("sessionType").value;
+      const date = document.getElementById("sessionDate").value;
+      const time = document.getElementById("sessionTime").value;
+      const repeat = document.getElementById("repeatWeekly").checked;
+
+      let newBookings = [{ session, date, time }];
+      if (repeat) {
+        for (let i = 1; i < 4; i++) {
+          const d = new Date(date);
+          d.setDate(d.getDate() + i * 7);
+          const formattedDate = d.toISOString().split("T")[0];
+          newBookings.push({ session, date: formattedDate, time });
+        }
+      }
+
+      bookings = bookings.concat(newBookings);
+      points += newBookings.length * 10;
+      saveData();
+      form.reset();
+      renderBookings();
+      alert(`✅ ${newBookings.length} session(s) booked! +${newBookings.length * 10} points`);
+
+      // Show payment button
+      payButton.classList.remove("hidden");
+    });
+
+    payButton.addEventListener("click", () => {
+      alert("💳 Redirecting to payment page...");
+      // Razorpay logic would be connected here or redirect to a payment page
+      // window.location.href = "payment.html";
+    });
+    
+  document.getElementById("payButton").addEventListener("click", function () {
+    var options = {
+      key: "rzp_test_8MwzT6lmRyVOwN", // Replace with your Razorpay API Key
+      "amount": 10000, // 10000 paise = ₹100
+      "currency": "INR",
+      "name": "Wellness App",
+      "description": "Session Booking Payment",
+      "handler": function (response) {
+        alert("✅ Payment Successful! Payment ID: " + response.razorpay_payment_id);
+        // Optionally, store this payment ID in localStorage or backend
+      },
+      "prefill": {
+        "name": "Your Name",
+        "email": "you@example.com",
+        "contact": "9999999999"
+      },
+      "theme": {
+        "color": "#6366f1"
+      }
+    };
+
+    var rzp = new Razorpay(options);
+    rzp.open();
+  });
+
+    // Initial load
+    renderBookings();
+    
+  </script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+</body>
+</html>

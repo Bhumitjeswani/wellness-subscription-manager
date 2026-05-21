@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wellness Dashboard + Custom Plan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white p-6">
+
+  <!-- Dashboard Header -->
+  <header class="text-center mb-10">
+    <h1 class="text-4xl font-bold text-indigo-600 dark:text-indigo-400">🌿 Wellness Dashboard</h1>
+    <p class="text-lg text-gray-600 dark:text-gray-300 mt-2">Track and customize your wellness journey</p>
+  </header>
+
+  <!-- Progress Section -->
+  <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow max-w-4xl mx-auto mb-10">
+    <h2 class="text-2xl font-semibold mb-6">🎯 Track Your Progress</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div class="text-center bg-indigo-100 dark:bg-indigo-900 p-4 rounded-lg shadow">
+        <p class="text-4xl font-bold text-indigo-600 dark:text-indigo-300" id="streak">🔥 5</p>
+        <p>Day Streak</p>
+      </div>
+      <div class="text-center bg-green-100 dark:bg-green-900 p-4 rounded-lg shadow">
+        <p class="text-4xl font-bold text-green-600 dark:text-green-300" id="totalSessions">🧘 18</p>
+        <p>Sessions Completed</p>
+      </div>
+      <div class="text-center bg-yellow-100 dark:bg-yellow-900 p-4 rounded-lg shadow">
+        <p class="text-4xl font-bold text-yellow-600 dark:text-yellow-300" id="hoursSpent">⏱️ 9h</p>
+        <p>Hours in Wellness</p>
+      </div>
+    </div>
+    <label class="block text-lg mb-2">Weekly Goal Progress</label>
+    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-6">
+      <div class="bg-blue-500 h-6 rounded-full text-white text-sm flex items-center justify-center transition-all duration-500" id="goalBar" style="width: 60%;">60%</div>
+    </div>
+  </div>
+
+  <!-- Custom Plan Creator -->
+  <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow max-w-4xl mx-auto">
+    <h2 class="text-2xl font-semibold mb-4">🛠️ Create Custom Plan</h2>
+    <form id="planForm" class="mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input type="text" placeholder="Plan Name (e.g., Morning Yoga)" id="planName" required class="p-2 rounded border dark:bg-gray-900 dark:border-gray-600"/>
+        <input type="number" placeholder="Sessions/Week" id="planFrequency" required class="p-2 rounded border dark:bg-gray-900 dark:border-gray-600"/>
+      </div>
+      <button type="submit" class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded shadow hover:bg-indigo-700">Add Plan</button>
+    </form>
+
+    <h3 class="text-xl font-semibold mb-2">📋 Your Plans</h3>
+    <ul id="planList" class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300"></ul>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Demo values
+    const streak = 5;
+    const totalSessions = 18;
+    const hoursSpent = 9;
+    const goalPercentage = 60;
+
+    // Progress injection
+    document.getElementById("streak").innerText = `🔥 ${streak}`;
+    document.getElementById("totalSessions").innerText = `🧘 ${totalSessions}`;
+    document.getElementById("hoursSpent").innerText = `⏱️ ${hoursSpent}h`;
+    const goalBar = document.getElementById("goalBar");
+    goalBar.style.width = goalPercentage + "%";
+    goalBar.innerText = goalPercentage + "%";
+
+    // Custom Plans
+    const planForm = document.getElementById("planForm");
+    const planList = document.getElementById("planList");
+
+    function loadPlans() {
+      const plans = JSON.parse(localStorage.getItem("customPlans")) || [];
+      planList.innerHTML = "";
+      plans.forEach(plan => {
+        const li = document.createElement("li");
+        li.textContent = `${plan.name} – ${plan.frequency}x/week`;
+        planList.appendChild(li);
+      });
+    }
+
+    planForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("planName").value;
+      const frequency = document.getElementById("planFrequency").value;
+
+      const plans = JSON.parse(localStorage.getItem("customPlans")) || [];
+      plans.push({ name, frequency });
+      localStorage.setItem("customPlans", JSON.stringify(plans));
+
+      planForm.reset();
+      loadPlans();
+    });
+
+    // Load existing on page load
+    loadPlans();
+  </script>
+</body>
+</html>

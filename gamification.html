@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gamification - Wellness</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' };
+  </script>
+</head>
+<body class="bg-white text-black dark:bg-gray-900 dark:text-white min-h-screen p-6 transition duration-500">
+
+  <!-- Dark Mode Toggle -->
+  <button id="toggleDarkMode" class="fixed top-4 right-4 px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded shadow">
+    Toggle Dark Mode
+  </button>
+
+  <!-- Header -->
+  <header class="mb-8 text-center">
+    <h1 class="text-4xl font-bold text-indigo-600 dark:text-indigo-400">🎮 Wellness Gamification</h1>
+    <p class="text-xl text-gray-600 dark:text-gray-300">Earn rewards, track your progress, and level up your wellness journey!</p>
+  </header>
+
+  <!-- User Stats with Progress Bars -->
+  <div class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg mb-8">
+    <h2 class="text-2xl font-semibold mb-4">Your Stats</h2>
+    <div id="userLevel" class="text-lg font-medium mb-4">Level: 1</div>
+    <div class="flex items-center mb-4">
+      <div class="w-1/4">Points:</div>
+      <div id="userPoints" class="flex-1 bg-gray-300 dark:bg-gray-600 rounded-full overflow-hidden h-4 relative">
+        <div id="pointsBar" class="bg-indigo-600 h-full w-0"></div>
+      </div>
+    </div>
+    <div class="flex items-center mb-4">
+      <div class="w-1/4">Streak:</div>
+      <div id="userStreak" class="flex-1 bg-gray-300 dark:bg-gray-600 rounded-full overflow-hidden h-4 relative">
+        <div id="streakBar" class="bg-green-600 h-full w-0"></div>
+      </div>
+    </div>
+    <div class="text-sm text-gray-600 dark:text-gray-300">Milestones Achieved: <span id="milestones">None</span></div>
+  </div>
+
+  <!-- Challenges with Button Actions -->
+  <div class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg mb-8">
+    <h2 class="text-2xl font-semibold mb-4">Current Challenges</h2>
+    <ul id="challengeList" class="space-y-3"></ul>
+    <button id="completeChallengeBtn" class="mt-4 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-full shadow-lg">
+      Complete Random Challenge
+    </button>
+  </div>
+
+  <!-- Leaderboard -->
+  <div class="max-w-xl mx-auto mb-8">
+    <h2 class="text-2xl font-semibold mb-4">Leaderboard</h2>
+    <ul id="leaderboard" class="space-y-3"></ul>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Dark Mode Toggle
+    const root = document.documentElement;
+    const toggleBtn = document.getElementById("toggleDarkMode");
+    if (localStorage.getItem("darkMode") === "true") root.classList.add("dark");
+    toggleBtn.addEventListener("click", () => {
+      root.classList.toggle("dark");
+      localStorage.setItem("darkMode", root.classList.contains("dark"));
+    });
+
+    // User Data and Functions
+    let points = parseInt(localStorage.getItem("points") || "0");
+    let streak = parseInt(localStorage.getItem("streak") || "0");
+    let level = parseInt(localStorage.getItem("level") || "1");
+    let challengesCompleted = JSON.parse(localStorage.getItem("challenges") || "[]");
+    let leaderboard = JSON.parse(localStorage.getItem("leaderboard") || "[]");
+
+    // Update User Stats and Progress Bars
+    function updateUserStats() {
+      document.getElementById("userPoints").textContent = `Points: ${points}`;
+      document.getElementById("userStreak").textContent = `Streak: ${streak} Days`;
+      document.getElementById("userLevel").textContent = `Level: ${level}`;
+
+      // Progress Bars
+      const pointsBar = document.getElementById("pointsBar");
+      pointsBar.style.width = `${(points % 100)}%`;
+
+      const streakBar = document.getElementById("streakBar");
+      streakBar.style.width = `${Math.min(streak * 10, 100)}%`;
+    }
+
+    // Update Leaderboard
+    function updateLeaderboard() {
+      const leaderboardList = document.getElementById("leaderboard");
+      leaderboardList.innerHTML = "";
+      leaderboard.sort((a, b) => b.points - a.points).forEach(user => {
+        const li = document.createElement("li");
+        li.classList.add("p-4", "bg-gray-100", "dark:bg-gray-700", "rounded-lg", "shadow-lg");
+        li.textContent = `${user.name} - ${user.points} points`;
+        leaderboardList.appendChild(li);
+      });
+    }
+
+    // Add New Challenge
+    function addChallenge(name, reward) {
+      const challengeList = document.getElementById("challengeList");
+      const li = document.createElement("li");
+      li.classList.add("p-4", "bg-blue-100", "dark:bg-blue-700", "rounded-lg", "shadow-lg");
+      li.textContent = `${name} - Reward: ${reward} points`;
+      challengeList.appendChild(li);
+    }
+
+    // Redirect to Challenge Page when Challenge Button is Clicked
+    document.getElementById("completeChallengeBtn").addEventListener("click", () => {
+      window.location.href = "challenge.html";  // Redirect to the challenge page
+    });
+
+    // Initialize and Render Stats
+    updateUserStats();
+    updateLeaderboard();
+    addChallenge("Complete a wellness session", 20);
+  </script>
+</body>
+</html>
